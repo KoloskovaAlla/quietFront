@@ -1,33 +1,53 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import CurrencyFromInput from './components/CurrencyFromInput.svelte'
-  import CurrencyToInput from './components/CurrencyToInput.svelte'
-  import AmountInput from './components/AmountInput.svelte'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import svelteLogo from './assets/svelte.svg';
+  import CurrencyFromInput from './components/CurrencyFromInput.svelte';
+  import CurrencyToInput from './components/CurrencyToInput.svelte';
+  import AmountInput from './components/AmountInput.svelte';
+  import viteLogo from '/vite.svg';
+  import Counter from './lib/Counter.svelte';
   import { createEventDispatcher } from 'svelte';
   import { onMount } from 'svelte';
 
-  // Создаем диспетчер событий для обновления значений полей ввода
   const dispatch = createEventDispatcher();
-
-  // Инициализируем начальные значения полей ввода
+  
   let fromCurrency = '';
   let toCurrency = '';
   let amount = '';
+  let fromRate;
+  let toRate;
+  let convertedAmount = 0;
 
-  // Функция для обработки изменений в поле ввода валюты
-  function handleCurrencyChange(event, field) {
-    const newValue = event.target.value;
-    // Отправляем обновленное значение поля ввода родительскому компоненту
-    dispatch('update', { field, value: newValue });
+  function recalculate() {
+    if (!exchangeRates) return;
+
+    fromRate = exchangeRates.rates[fromCurrency];
+    toRate = exchangeRates.rates[toCurrency];
+
+    if (!fromRate || !toRate) {
+      console.error('Exchange rates not available for selected currencies');
+      return;
+    }
+
+    convertedAmount = (amount / fromRate) * toRate;
+    console.log(`Converted amount: ${convertedAmount.toFixed(2)} ${toCurrency}`);
   }
 
-  // Функция для обработки изменений в поле ввода суммы конвертации
+  function handleFromCurrencyChange(event) {
+    console.log('первая валюта')
+    fromCurrency = event.detail;
+    recalculate();
+  }
+
+  function handleToCurrencyChange(event) {
+    console.log('вторая валюта')
+    toCurrency = event.detail;
+    recalculate();
+  }
+
   function handleAmountChange(event) {
-    const newValue = event.target.value;
-    // Отправляем обновленное значение поля ввода родительскому компоненту
-    dispatch('update', { field: 'amount', value: newValue });
+    console.log('сумма')
+    amount = event.detail;
+    recalculate();
   }
 
   async function fetchExchangeRates(baseCurrency) {
@@ -49,34 +69,25 @@
   let exchangeRates;
 
   onMount(async () => {
-    // Вызываем функцию для получения курсов обмена с базовой валютой USD
     exchangeRates = await fetchExchangeRates('USD');
-    console.log(exchangeRates);
   });
-
 </script>
 
-
-
 <main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+
 
   <div class="card">
     <Counter />
   </div>
 
   <div class="card">
-    <CurrencyFromInput label="From" bind:value={fromCurrency} on:update={handleCurrencyChange} />
-    <CurrencyToInput label="To" bind:value={toCurrency} on:update={handleCurrencyChange} />
-    <AmountInput label="Amount" bind:value={amount} on:update={handleAmountChange} />
+    <CurrencyFromInput label="From" bind:value={fromCurrency} on:change{handleFromCurrencyChange} />
+    <CurrencyToInput label="To" bind:value={toCurrency} on:change={handleToCurrencyChange} />
+    <AmountInput label="Amount" bind:value={amount} on:change={handleAmountChange} />
+  </div>
+
+  <div class="card">
+    <p class="result">Converted amount: {convertedAmount.toFixed(2)} {toCurrency}</p>
   </div>
 
   <p>

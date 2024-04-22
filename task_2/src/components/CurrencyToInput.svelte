@@ -1,22 +1,22 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  export let value; // Проп value
+  export let label; // Проп label
+
   // Создаем диспетчер событий для обновления значения валюты
   const dispatch = createEventDispatcher();
-
-  // Инициализируем начальное значение валюты
-  let value = '';
 
   // Функция для обработки изменений в поле ввода валюты
   function handleChange(event) {
     // Получаем новое значение из поля ввода
     const newValue = event.target.value;
     // Отправляем обновленное значение родительскому компоненту
-    dispatch('updateTo', newValue);
+    dispatch('change', newValue);
   }
 </script>
 
 <label>
-  To:
-  <input type="text" placeholder="Enter currency" bind:value={value} on:input={handleChange} />
+  {label}: <!-- Отображаем label перед полем ввода -->
+  <input type="text" placeholder="Enter currency" bind:value={value} on:change={handleChange} />
 </label>
