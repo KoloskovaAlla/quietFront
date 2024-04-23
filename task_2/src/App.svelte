@@ -28,8 +28,7 @@
       return;
     }
 
-    convertedAmount = (amount / fromRate) * toRate;
-    console.log(`Converted amount: ${convertedAmount.toFixed(2)} ${toCurrency}`);
+    convertedAmount = (amount / fromRate) * toRate;    
   }
 
   function handleFromCurrencyChange(event) {
@@ -39,13 +38,11 @@
   }
 
   function handleToCurrencyChange(event) {
-    console.log('вторая валюта')
     toCurrency = event.detail;
     recalculate();
   }
 
-  function handleAmountChange(event) {
-    console.log('сумма')
+  function handleAmountChange(event) {    
     amount = event.detail;
     recalculate();
   }
@@ -74,12 +71,6 @@
 </script>
 
 <main>
-
-
-  <div class="card">
-    <Counter />
-  </div>
-
   <div class="card">
     <CurrencyFromInput label="From" bind:value={fromCurrency} on:change{handleFromCurrencyChange} />
     <CurrencyToInput label="To" bind:value={toCurrency} on:change={handleToCurrencyChange} />
@@ -90,13 +81,9 @@
     <p class="result">Converted amount: {convertedAmount.toFixed(2)} {toCurrency}</p>
   </div>
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  <div class="card">
+    <Counter />
+  </div>
 </main>
 
 <style>
@@ -114,5 +101,15 @@
   }
   .read-the-docs {
     color: #888;
+  }
+  .input-container {
+    display: flex;
+    align-items: center; /* Выравниваем элементы по вертикали */
+  }
+  .amount-label {
+    display: inline-block;
+    width: 70px; /* Задайте ширину по вашему усмотрению */
+    text-align: right;
+    margin-right: 10px; /* Расстояние между меткой и полем ввода */
   }
 </style>
